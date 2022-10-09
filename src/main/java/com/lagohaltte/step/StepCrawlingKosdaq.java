@@ -8,24 +8,24 @@ import org.jsoup.select.Elements;
 import org.springframework.batch.item.database.AbstractPagingItemReader;
 
 import java.io.IOException;
-import java.rmi.ConnectException;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class StepCrawlingKOSDAQ extends AbstractPagingItemReader<String> {
+public class StepCrawlingKosdaq extends AbstractPagingItemReader<String> {
     final static String naverKosdaqFinance = "https://finance.naver.com/sise/sise_market_sum.naver?sosok=1";
 
     @Override
     protected void doReadPage() {
+        this.setPageSize(50);
         log.info("reader start. current page: {}", this.getPage() + 1);
         String url = naverKosdaqFinance + "&page=" + (this.getPage() + 1);
 
-        log.info("naver finance url: {}", url);
+        log.info("naver kosdaq finance url: {}", url);
         Connection conn = Jsoup.connect(url);
 
         Document document;
         try {
-             document = conn.get();
+            document = conn.get();
         } catch (IOException e) {
             throw new RuntimeException();
         }
@@ -37,10 +37,11 @@ public class StepCrawlingKOSDAQ extends AbstractPagingItemReader<String> {
         results = stockNameUrlElements.stream()
                 .filter(element -> element.hasAttr("onmouseover"))
                 .filter(element -> element.children().is("td"))
-                .map(element -> element.select("a").text())
+                .map(element -> element.select("a").text().trim())
                 .collect(Collectors.toList());
-        log.info("Crawling results {} ", results);
+        log.info("Crawling kosdaq results {} ", results);
     }
+
     @Override
     protected void doJumpToPage(int itemIndex) {
     }

@@ -2,12 +2,12 @@ package com.lagohaltte.step;
 
 import org.junit.jupiter.api.Test;
 
-class StepCrawlingKOSPITest {
+class StepCrawlingKospiTest {
 
     @Test
     void 네이버파이낸코스링크롤링(){
         //given
-        StepCrawlingKOSPI stepCrawlingKOSPI = new StepCrawlingKOSPI();
+        StepCrawlingKospi stepCrawlingKOSPI = new StepCrawlingKospi();
         //when
         stepCrawlingKOSPI.doReadPage();
 

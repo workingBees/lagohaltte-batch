@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 @EnableBatchProcessing
 @SpringBootApplication
 public class LagohaltteBatchApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(LagohaltteBatchApplication.class, args);
     }

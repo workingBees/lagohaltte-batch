@@ -1,5 +1,6 @@
 package com.lagohaltte.step;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -11,15 +12,16 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class StepCrawlingKosdaq extends AbstractPagingItemReader<String> {
-    final static String naverKosdaqFinance = "https://finance.naver.com/sise/sise_market_sum.naver?sosok=1";
+public class StepCrawlingStockName extends AbstractPagingItemReader<String> {
+
+    @Setter
+    private String naverFinanceUrl;
 
     @Override
     protected void doReadPage() {
         this.setPageSize(50);
         log.info("reader start. current page: {}", this.getPage() + 1);
-        String url = naverKosdaqFinance + "&page=" + (this.getPage() + 1);
-
+        String url = naverFinanceUrl + "&page=" + (this.getPage() + 1);
         log.info("naver kosdaq finance url: {}", url);
         Connection conn = Jsoup.connect(url);
 

@@ -2,14 +2,14 @@ package com.lagohaltte.step;
 
 import org.junit.jupiter.api.Test;
 
-class StepCrawlingKosdaqTest {
+class StepCrawlingStockNameTest {
 
     @Test
     void 네이버파이낸스코스닥크롤() {
         //given
-        StepCrawlingKosdaq stepCrawlingKOSDAQ = new StepCrawlingKosdaq();
+        StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
         //when
-        stepCrawlingKOSDAQ.doReadPage();
+        stepCrawlingStockName.doReadPage();
 
         //then
     }

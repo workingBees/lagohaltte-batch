@@ -8,6 +8,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -20,6 +21,11 @@ public class JobConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
     private final MongoTemplate mongoTemplate;
     private final CallStockInfoOpenApi callStockInfoOpenApi;
+
+    @Value("${naverKosdaqUrl}")
+    private String naverKosdaqUrl;
+    @Value("${naverKospiUrl}")
+    private String naverKospiUrl;
 
     @Bean
     public Job listedCorporationsJob() throws Exception {
@@ -34,7 +40,7 @@ public class JobConfiguration {
     public Step listedKosdaqCorporationsStep() {
         return stepBuilderFactory.get("listedKosdaqCorporationsStep")
                 .<String, String>chunk(1)
-                .reader(new StepCrawlingKosdaq())
+                .reader(crawlingKospiStockName())
                 .writer(new StepStockNameWriter(mongoTemplate))
                 .build();
     }
@@ -43,17 +49,31 @@ public class JobConfiguration {
     public Step listedKospiCorporationStep() {
         return stepBuilderFactory.get("listedKospiCorporationsStep")
                 .<String, String>chunk(1)
-                .reader(new StepCrawlingKospi())
+                .reader(crawlingKosdaqStockName())
                 .writer(new StepStockNameWriter(mongoTemplate))
                 .build();
     }
 
     @Bean
+    public StepCrawlingStockName crawlingKospiStockName() {
+        StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
+        stepCrawlingStockName.setNaverFinanceUrl(naverKospiUrl);
+        return stepCrawlingStockName;
+    }
+
+    @Bean
+    public StepCrawlingStockName crawlingKosdaqStockName() {
+        StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
+        stepCrawlingStockName.setNaverFinanceUrl(naverKosdaqUrl);
+        return stepCrawlingStockName;
+    }
+
+    @Bean
     public Step listedCorporationStockInfoStep() throws Exception {
         return stepBuilderFactory.get("listedCorporationStockInfoStep")
-                .<StockName,StockName>chunk(1)
+                .<StockName, StockName>chunk(1)
                 .reader(new StepStockNameReader(mongoTemplate))
-                .writer(new StepStockInfoWriter(callStockInfoOpenApi,mongoTemplate))
+                .writer(new StepStockInfoWriter(callStockInfoOpenApi, mongoTemplate))
                 .build();
     }
 }

@@ -22,7 +22,7 @@ public class StepCrawlingStockName extends AbstractPagingItemReader<String> {
         this.setPageSize(50);
         log.info("reader start. current page: {}", this.getPage() + 1);
         String url = naverFinanceUrl + "&page=" + (this.getPage() + 1);
-        log.info("naver kosdaq finance url: {}", url);
+        log.info("naver finance url: {}", url);
         Connection conn = Jsoup.connect(url);
 
         Document document;
@@ -41,7 +41,7 @@ public class StepCrawlingStockName extends AbstractPagingItemReader<String> {
                 .filter(element -> element.children().is("td"))
                 .map(element -> element.select("a").text().trim())
                 .collect(Collectors.toList());
-        log.info("Crawling kosdaq results {} ", results);
+        log.info("Crawling results {} ", results);
     }
 
     @Override

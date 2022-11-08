@@ -10,7 +10,7 @@ class CallStockInfoOpenApiTest {
 
     @Test
     public void 공공데이터_API테스트() throws IOException {
-        crawlingFinance.requestPriceInfo("삼성전자");
+
     }
 
 }

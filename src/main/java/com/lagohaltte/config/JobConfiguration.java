@@ -1,6 +1,8 @@
 package com.lagohaltte.config;
 
-import com.lagohaltte.domain.StockName;
+import com.lagohaltte.comm.LagohaltteCommon;
+import com.lagohaltte.dto.FinanceBaseDto;
+import com.lagohaltte.dto.StockName;
 import com.lagohaltte.step.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ public class JobConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
     private final MongoTemplate mongoTemplate;
     private final CallStockInfoOpenApi callStockInfoOpenApi;
+    private final LagohaltteCommon lagohaltteCommon;
 
     @Value("${naverKosdaqUrl}")
     private String naverKosdaqUrl;
@@ -39,8 +42,9 @@ public class JobConfiguration {
     @Bean
     public Step listedKosdaqCorporationsStep() {
         return stepBuilderFactory.get("listedKosdaqCorporationsStep")
-                .<String, String>chunk(1)
-                .reader(crawlingKospiStockName())
+                .<String, FinanceBaseDto>chunk(1)
+                .reader(crawlingKosdaqStockName())
+                .processor(new StepStockBaseInfoProcessor(lagohaltteCommon, callStockInfoOpenApi))
                 .writer(new StepStockNameWriter(mongoTemplate))
                 .build();
     }
@@ -48,13 +52,24 @@ public class JobConfiguration {
     @Bean
     public Step listedKospiCorporationStep() {
         return stepBuilderFactory.get("listedKospiCorporationsStep")
-                .<String, String>chunk(1)
-                .reader(crawlingKosdaqStockName())
+                .<String, FinanceBaseDto>chunk(1)
+                .reader(crawlingKospiStockName())
+                .processor(new StepStockBaseInfoProcessor(lagohaltteCommon, callStockInfoOpenApi))
                 .writer(new StepStockNameWriter(mongoTemplate))
                 .build();
     }
 
     @Bean
+    public Step listedCorporationStockInfoStep() throws Exception {
+        return stepBuilderFactory.get("listedCorporationStockInfoStep")
+                .<StockName, StockName>chunk(1)
+                .reader(new StepStockNameReader(mongoTemplate))
+                .writer(new StepFinanceInfoWriter(callStockInfoOpenApi, mongoTemplate, lagohaltteCommon))
+                .build();
+    }
+
+    @Bean
+
     public StepCrawlingStockName crawlingKospiStockName() {
         StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
         stepCrawlingStockName.setNaverFinanceUrl(naverKospiUrl);
@@ -66,14 +81,5 @@ public class JobConfiguration {
         StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
         stepCrawlingStockName.setNaverFinanceUrl(naverKosdaqUrl);
         return stepCrawlingStockName;
-    }
-
-    @Bean
-    public Step listedCorporationStockInfoStep() throws Exception {
-        return stepBuilderFactory.get("listedCorporationStockInfoStep")
-                .<StockName, StockName>chunk(1)
-                .reader(new StepStockNameReader(mongoTemplate))
-                .writer(new StepStockInfoWriter(callStockInfoOpenApi, mongoTemplate))
-                .build();
     }
 }

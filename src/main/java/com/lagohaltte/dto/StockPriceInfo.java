@@ -1,4 +1,4 @@
-package com.lagohaltte.domain;
+package com.lagohaltte.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(collation = "StockPrice")
 public class StockPriceInfo {
     private Response response;
 

@@ -1,4 +1,4 @@
-package com.lagohaltte.domain;
+package com.lagohaltte.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

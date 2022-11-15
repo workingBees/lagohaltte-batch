@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.lagohaltte.repo")
 public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
 
     @Value("${mongoDbUrl}")

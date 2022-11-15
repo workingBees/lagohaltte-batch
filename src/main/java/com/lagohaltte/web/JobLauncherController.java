@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.springframework.boot.autoconfigure.batch.BasicBatchConfigurer;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobLauncherController {
     private final JobConfiguration jobConfiguration;
     private final JobLauncher jobLauncher;
+    private final BasicBatchConfigurer basicBatchConfigurer;
 
     @GetMapping("/excute/batchjob")
     public void startStockCrawling() throws Exception {
         log.info("startstockcrawling");
-        jobLauncher.run(jobConfiguration.listedCorporationsJob(),new JobParameters());
+        SimpleJobLauncher simpleJobLauncher = (SimpleJobLauncher)basicBatchConfigurer.getJobLauncher();
+        simpleJobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
+
+        simpleJobLauncher.run(jobConfiguration.listedCorporationsJob(),new JobParameters());
     }
 }

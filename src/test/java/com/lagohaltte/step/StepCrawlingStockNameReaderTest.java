@@ -2,7 +2,7 @@ package com.lagohaltte.step;
 
 import org.junit.jupiter.api.Test;
 
-class StepCrawlingStockNameTest {
+class StepCrawlingStockNameReaderTest {
 
     @Test
     void 네이버파이낸스코스닥크롤() {

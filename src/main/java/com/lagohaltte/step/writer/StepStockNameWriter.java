@@ -1,4 +1,4 @@
-package com.lagohaltte.step;
+package com.lagohaltte.step.writer;
 
 import com.lagohaltte.dto.FinanceBaseDto;
 import lombok.RequiredArgsConstructor;

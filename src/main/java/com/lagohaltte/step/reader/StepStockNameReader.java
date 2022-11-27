@@ -1,4 +1,4 @@
-package com.lagohaltte.step;
+package com.lagohaltte.step.reader;
 
 
 import com.lagohaltte.dto.StockName;

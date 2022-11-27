@@ -1,9 +1,10 @@
-package com.lagohaltte.step;
+package com.lagohaltte.step.writer;
 
 import com.lagohaltte.comm.LagohaltteCommon;
 import com.lagohaltte.dto.FinanceInfoDto;
 import com.lagohaltte.dto.StockName;
 import com.lagohaltte.dto.StockPriceInfo;
+import com.lagohaltte.step.CallStockInfoOpenApi;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,8 @@ public class StepFinanceInfoWriter extends MongoItemWriter<StockName> {
     private final CallStockInfoOpenApi callStockInfoOpenApi;
     private final MongoTemplate mongoTemplate;
     private final LagohaltteCommon lagohaltteCommon;
-    @Value("${financeInfo}")
-    private String financeInfoCollectionName;
+
+    private String financeInfoCollectionName ="FinanceInfo";
 
     @Override
     public void write(List<? extends StockName> items) {

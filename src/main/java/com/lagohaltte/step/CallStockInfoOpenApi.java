@@ -38,6 +38,7 @@ public class CallStockInfoOpenApi {
                 .queryParam("beginBasDt", beginDate)
                 .build()
                 .toUriString();
+
         return restTemplate.getForEntity(uri, StockPriceInfo.class);
     }
 }

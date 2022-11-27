@@ -4,6 +4,11 @@ import com.lagohaltte.comm.LagohaltteCommon;
 import com.lagohaltte.dto.FinanceBaseDto;
 import com.lagohaltte.dto.StockName;
 import com.lagohaltte.step.*;
+import com.lagohaltte.step.processor.StepStockBaseInfoProcessor;
+import com.lagohaltte.step.reader.StepCrawlingStockNameReader;
+import com.lagohaltte.step.reader.StepStockNameReader;
+import com.lagohaltte.step.writer.StepFinanceInfoWriter;
+import com.lagohaltte.step.writer.StepStockNameWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -70,15 +75,15 @@ public class JobConfiguration {
 
     @Bean
 
-    public StepCrawlingStockName crawlingKospiStockName() {
-        StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
+    public StepCrawlingStockNameReader crawlingKospiStockName() {
+        StepCrawlingStockNameReader stepCrawlingStockName = new StepCrawlingStockNameReader();
         stepCrawlingStockName.setNaverFinanceUrl(naverKospiUrl);
         return stepCrawlingStockName;
     }
 
     @Bean
-    public StepCrawlingStockName crawlingKosdaqStockName() {
-        StepCrawlingStockName stepCrawlingStockName = new StepCrawlingStockName();
+    public StepCrawlingStockNameReader crawlingKosdaqStockName() {
+        StepCrawlingStockNameReader stepCrawlingStockName = new StepCrawlingStockNameReader();
         stepCrawlingStockName.setNaverFinanceUrl(naverKosdaqUrl);
         return stepCrawlingStockName;
     }

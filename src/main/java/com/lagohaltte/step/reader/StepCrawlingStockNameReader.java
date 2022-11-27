@@ -1,4 +1,4 @@
-package com.lagohaltte.step;
+package com.lagohaltte.step.reader;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class StepCrawlingStockName extends AbstractPagingItemReader<String> {
+public class StepCrawlingStockNameReader extends AbstractPagingItemReader<String> {
 
     @Setter
     private String naverFinanceUrl;

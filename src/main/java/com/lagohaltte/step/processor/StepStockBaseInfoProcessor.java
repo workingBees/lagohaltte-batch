@@ -1,8 +1,9 @@
-package com.lagohaltte.step;
+package com.lagohaltte.step.processor;
 
 import com.lagohaltte.comm.LagohaltteCommon;
 import com.lagohaltte.dto.StockPriceInfo;
 import com.lagohaltte.dto.FinanceBaseDto;
+import com.lagohaltte.step.CallStockInfoOpenApi;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

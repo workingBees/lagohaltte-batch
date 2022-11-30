@@ -1,4 +1,4 @@
-package com.lagohaltte.dto;
+package com.lagohaltte.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -12,9 +12,8 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Setter
 public class StepCrawlingStockNameReader extends AbstractPagingItemReader<String> {
-
-    @Setter
     private String naverFinanceUrl;
 
     @Override

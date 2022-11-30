@@ -1,16 +1,15 @@
 package com.lagohaltte.step.writer;
 
-import com.lagohaltte.comm.LagohaltteCommon;
-import com.lagohaltte.dto.FinanceInfoDto;
-import com.lagohaltte.dto.StockName;
-import com.lagohaltte.dto.StockPriceInfo;
+import com.lagohaltte.entity.FinanceBaseDto;
+import com.lagohaltte.utils.LagohaltteUtil;
+import com.lagohaltte.entity.FinanceInfoDto;
+import com.lagohaltte.model.StockName;
+import com.lagohaltte.model.StockPriceInfo;
 import com.lagohaltte.step.CallStockInfoOpenApi;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.data.MongoItemWriter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -26,34 +25,22 @@ import java.util.Objects;
 public class StepFinanceInfoWriter extends MongoItemWriter<StockName> {
     private final CallStockInfoOpenApi callStockInfoOpenApi;
     private final MongoTemplate mongoTemplate;
-    private final LagohaltteCommon lagohaltteCommon;
-
-    private String financeInfoCollectionName ="FinanceInfo";
+    private final String financeInfoCollectionName = "FinanceInfo";
 
     @Override
-    public void write(List<? extends StockName> items) {
-        items.forEach(s -> {
-            if (lagohaltteCommon.isExistsCollection(s.getName(), financeInfoCollectionName)) {
+    public void write(List<? extends StockName> items) throws IOException {
+        for (StockName stockName : items) {
+            if (isExistsCollection(stockName.getName(), financeInfoCollectionName)) {
                 //존재할 경우, 아이템 하나 넣는거
-                try {
-                    insertOneStockInfo(s.getName());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                insertOneStockInfo(stockName.getName());
             } else {
                 //존재하지 않을 경우, 아이템 전부 다 넣는거
-                try {
-                    insertAllStockInfo(s.getName());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
+                insertAllStockInfo(stockName.getName());
             }
-        });
+        }
     }
-
     private void insertOneStockInfo(String stockName) throws IOException {
-        if (isHaveLastDayData(stockName, lagohaltteCommon.getLastDay())) {
+        if (isHaveLastDayData(stockName, LagohaltteUtil.getLastDay())) {
             return;
         }
         FinanceInfoDto financeInfoDto = callLastDayStockPriceInfo(stockName);
@@ -75,9 +62,6 @@ public class StepFinanceInfoWriter extends MongoItemWriter<StockName> {
 
     private void insertAllStockInfo(String stockName) throws IOException {
         FinanceInfoDto financeInfoDto = callStockAllItems(stockName);
-        if (Objects.isNull(financeInfoDto)) {
-            return;
-        }
         if (financeInfoDto.getTotalCount().equals("0")) {
             return;
         }
@@ -86,17 +70,22 @@ public class StepFinanceInfoWriter extends MongoItemWriter<StockName> {
         }
         log.info("All 제대로 넣음");
     }
+    public boolean isExistsCollection(String stockName, String collectionName) {
+        Query query = new Query(Criteria.where("name").is(stockName));
+        FinanceBaseDto financeBaseDto = mongoTemplate.findOne(query, FinanceBaseDto.class, collectionName);
+        return Objects.nonNull(financeBaseDto);
+    }
 
     private FinanceInfoDto callStockAllItems(String stockName) throws IOException {
         ResponseEntity<StockPriceInfo> stockPriceInfoResponseEntity = callStockInfoOpenApi.requestPriceInfo(stockName, "20200102");
-        return lagohaltteCommon.convertStockPriceInfoToFinanceDto(stockName, Objects.requireNonNull(stockPriceInfoResponseEntity.getBody()));
+        return LagohaltteUtil.convertStockPriceInfoToFinanceDto(stockName, Objects.requireNonNull(stockPriceInfoResponseEntity.getBody()));
     }
 
     private FinanceInfoDto callLastDayStockPriceInfo(String stockName) throws IOException {
-        if (lagohaltteCommon.isWeekendDay()) return null;
-        String lastDay = lagohaltteCommon.getLastDay();
+        if (LagohaltteUtil.isWeekendDay()) return null;
+        String lastDay = LagohaltteUtil.getLastDay();
         ResponseEntity<StockPriceInfo> stockPriceInfoResponseEntity = callStockInfoOpenApi.requestPriceInfo(stockName, lastDay);
-        return lagohaltteCommon.convertStockPriceInfoToFinanceDto(stockName, Objects.requireNonNull(stockPriceInfoResponseEntity.getBody()));
+        return LagohaltteUtil.convertStockPriceInfoToFinanceDto(stockName, Objects.requireNonNull(stockPriceInfoResponseEntity.getBody()));
     }
 
     private boolean pushFinanceInfoItem(FinanceInfoDto financeInfoDto) {

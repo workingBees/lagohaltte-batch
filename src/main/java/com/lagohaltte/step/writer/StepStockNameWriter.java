@@ -1,6 +1,6 @@
 package com.lagohaltte.step.writer;
 
-import com.lagohaltte.dto.FinanceBaseDto;
+import com.lagohaltte.entity.FinanceBaseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

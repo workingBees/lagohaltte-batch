@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
@@ -15,7 +16,7 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
     @Value("${mongoDbUrl}")
     private String mongoDdUrl ;
     @Override
-    public MongoClient mongoClient() {
+    public @NotNull MongoClient mongoClient() {
         final ConnectionString connectionString = new ConnectionString(mongoDdUrl);
         final MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
@@ -24,7 +25,7 @@ public class MongoDbConfiguration extends AbstractMongoClientConfiguration {
     }
 
     @Override
-    protected String getDatabaseName() {
+    protected @NotNull String getDatabaseName() {
         return "lagohaltte";
     }
 }

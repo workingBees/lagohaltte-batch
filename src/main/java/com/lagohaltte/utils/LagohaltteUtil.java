@@ -1,8 +1,8 @@
-package com.lagohaltte.comm;
+package com.lagohaltte.utils;
 
-import com.lagohaltte.dto.StockPriceInfo;
-import com.lagohaltte.dto.FinanceBaseDto;
-import com.lagohaltte.dto.FinanceInfoDto;
+import com.lagohaltte.model.StockPriceInfo;
+import com.lagohaltte.entity.FinanceBaseDto;
+import com.lagohaltte.entity.FinanceInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,17 +20,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class LagohaltteCommon {
-    private final MongoTemplate mongoTemplate;
-    private final String baseDt = "20200102";
+public class LagohaltteUtil {
 
-    public boolean isExistsCollection(String stockName, String collectionName) {
-        Query query = new Query(Criteria.where("name").is(stockName));
-        FinanceBaseDto financeBaseDto = mongoTemplate.findOne(query, FinanceBaseDto.class, collectionName);
-        return Objects.nonNull(financeBaseDto);
-    }
-
-    public FinanceBaseDto convertStockToFinanceBaseDto(StockPriceInfo.Response.Body.Items.Item stockPriceInfoItem) {
+    public static FinanceBaseDto convertStockToFinanceBaseDto(StockPriceInfo.Response.Body.Items.Item stockPriceInfoItem) {
         return FinanceBaseDto.builder()
                 .isinCd(stockPriceInfoItem.getIsinCd())
                 .itmsNm(stockPriceInfoItem.getItmsNm())
@@ -39,7 +31,7 @@ public class LagohaltteCommon {
                 .build();
     }
 
-    public FinanceInfoDto convertStockPriceInfoToFinanceDto(String stockName, StockPriceInfo stockPriceInfo) {
+    public static FinanceInfoDto convertStockPriceInfoToFinanceDto(String stockName, StockPriceInfo stockPriceInfo) {
         FinanceInfoDto financeInfoDto = new FinanceInfoDto();
         financeInfoDto.setName(stockName);
         financeInfoDto.setTotalCount(stockPriceInfo.getResponse().getBody().getTotalCount());
@@ -47,21 +39,21 @@ public class LagohaltteCommon {
         return financeInfoDto;
     }
 
-    public String getLastDay() {
+    public static String getLastDay() {
         LocalDate localDate = LocalDate.now();
         localDate = localDate.minusDays(1);
         return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    public boolean isWeekendDay() {
-        LocalDate date = LocalDate.now();
+    public static boolean isWeekendDay() {
+        LocalDate date = LocalDate.now().minusDays(1);
         date.minusDays(1);
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         String dayName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US);
         return dayName.equals("Saturday") || dayName.equals("Sunday");
     }
 
-    private List<FinanceInfoDto.Item> getFinanceDtoItem(StockPriceInfo.Response.Body.Items stockPriceInfoItems) {
+    private static List<FinanceInfoDto.Item> getFinanceDtoItem(StockPriceInfo.Response.Body.Items stockPriceInfoItems) {
         return stockPriceInfoItems.getItem().stream()
                 .map(item -> {
                     return FinanceInfoDto.Item.builder()

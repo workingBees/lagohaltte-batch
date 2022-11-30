@@ -1,6 +1,6 @@
 package com.lagohaltte.step;
 
-import com.lagohaltte.dto.StockPriceInfo;
+import com.lagohaltte.model.StockPriceInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,12 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +35,10 @@ public class CallStockInfoOpenApi {
                 .queryParam("beginBasDt", beginDate)
                 .build()
                 .toUriString();
-
-        return restTemplate.getForEntity(uri, StockPriceInfo.class);
+        ResponseEntity<StockPriceInfo> result = restTemplate.getForEntity(uri, StockPriceInfo.class);
+        if(Objects.requireNonNull(result.getBody()).getResponse().getBody().getTotalCount().equals("0")) {
+            return null;
+        }
+        return result;
     }
 }

@@ -1,4 +1,4 @@
-package com.lagohaltte.dto;
+package com.lagohaltte.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;

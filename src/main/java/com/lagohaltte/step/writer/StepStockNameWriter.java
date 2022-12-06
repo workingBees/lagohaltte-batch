@@ -1,6 +1,7 @@
 package com.lagohaltte.step.writer;
 
-import com.lagohaltte.entity.FinanceBaseDto;
+import com.lagohaltte.entity.FinanceInfoEntity;
+import com.lagohaltte.utils.MongoCollection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,20 +15,20 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
-public class StepStockNameWriter extends JdbcBatchItemWriter<FinanceBaseDto> {
+public class StepStockNameWriter extends JdbcBatchItemWriter<FinanceInfoEntity> {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public void write(List<? extends FinanceBaseDto> items) {
-        for (FinanceBaseDto item : items) {
-            Query query = new Query(Criteria.where("name").is(item.getItmsNm()));
+    public void write(List<? extends FinanceInfoEntity> items) {
+        for (FinanceInfoEntity item : items) {
+            Query query = new Query(Criteria.where("name").is(item.getStockName()));
             Update update = new Update();
-            update.set("name", StringUtils.trim(item.getItmsNm()));
-            update.set("isinCd", StringUtils.trim(item.getIsinCd()));
-            update.set("mrktCtg", StringUtils.trim(item.getMrktCtg()));
-            update.set("srtnCd", StringUtils.trim(item.getSrtnCd()));
+            update.set(MongoCollection.STOCKNAME.getFiledName(), StringUtils.trim(item.getStockName()));
+            update.set(MongoCollection.ISINCODE.getFiledName(), StringUtils.trim(item.getIsinCd()));
+            update.set(MongoCollection.MARKETCATEGORY.getFiledName(), StringUtils.trim(item.getMarketCategory()));
+            update.set("srtnCd", StringUtils.trim(item.getStockIdCode()));
             mongoTemplate.upsert(query, update, "FinanceBases");
-            log.info("Insert DB : {}", item.getItmsNm());
+            log.info("Insert DB : {}", item.getStockName());
         }
     }
 }

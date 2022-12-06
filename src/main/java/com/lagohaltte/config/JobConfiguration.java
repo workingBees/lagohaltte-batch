@@ -1,14 +1,10 @@
 package com.lagohaltte.config;
 
-import com.lagohaltte.utils.LagohaltteUtil;
-import com.lagohaltte.entity.FinanceBaseDto;
-import com.lagohaltte.model.StockName;
+import com.lagohaltte.entity.FinanceInfoEntity;
+import com.lagohaltte.listener.CustomListener;
 import com.lagohaltte.step.*;
-import com.lagohaltte.step.processor.StepStockBaseInfoProcessor;
 import com.lagohaltte.step.reader.StepCrawlingStockNameReader;
-import com.lagohaltte.step.reader.StepStockNameReader;
 import com.lagohaltte.step.writer.StepFinanceInfoWriter;
-import com.lagohaltte.step.writer.StepStockNameWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -19,10 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Configuration
@@ -43,36 +35,26 @@ public class JobConfiguration {
         return jobBuilderFactory.get("listedCorporationsJob")
                 .start(listedKosdaqCorporationsStep())
                 .next(listedKospiCorporationStep())
-                .next(listedCorporationStockInfoStep())
                 .build();
     }
 
     @Bean
     public Step listedKosdaqCorporationsStep() {
         return stepBuilderFactory.get("listedKosdaqCorporationsStep")
-                .<String, FinanceBaseDto>chunk(1)
+                .<String, String>chunk(1)
                 .reader(crawlingKosdaqStockName())
-                .processor(new StepStockBaseInfoProcessor( callStockInfoOpenApi))
-                .writer(new StepStockNameWriter(mongoTemplate))
+                .writer(new StepFinanceInfoWriter(callStockInfoOpenApi, mongoTemplate))
+                .listener(new CustomListener())
                 .build();
     }
 
     @Bean
     public Step listedKospiCorporationStep() {
         return stepBuilderFactory.get("listedKospiCorporationsStep")
-                .<String, FinanceBaseDto>chunk(1)
+                .<String, String>chunk(1)
                 .reader(crawlingKospiStockName())
-                .processor(new StepStockBaseInfoProcessor( callStockInfoOpenApi))
-                .writer(new StepStockNameWriter(mongoTemplate))
-                .build();
-    }
-
-    @Bean
-    public Step listedCorporationStockInfoStep() throws Exception {
-        return stepBuilderFactory.get("listedCorporationStockInfoStep")
-                .<StockName, StockName>chunk(1)
-                .reader(new StepStockNameReader(mongoTemplate))
                 .writer(new StepFinanceInfoWriter(callStockInfoOpenApi, mongoTemplate))
+                .listener(new CustomListener())
                 .build();
     }
 

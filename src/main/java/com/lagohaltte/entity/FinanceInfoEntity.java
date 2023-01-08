@@ -44,7 +44,6 @@ public class FinanceInfoEntity {
         private long tradePriceVolume; //거래건별 체결 가격 * 체결수량의 누적합계
         private long totalStock; //상장주식수
         private String baseDate; //기준일자
-        //TODO : static item builder로
         public static Item convertStockInfoToItem(StockPriceInfo.Response.Body.Items.Item stockPriceInfoItem) {
             return Item.builder()
                     .marketCap(Long.parseLong(stockPriceInfoItem.getMrktTotAmt()))

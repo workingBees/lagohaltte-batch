@@ -1,10 +1,12 @@
 package com.lagohaltte.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum MongoCollection {
-    COLLECTIONNAME("FinanceInfoTest"),
+    COLLECTIONNAME("FinanceInfo"),
     ISINCODE("isincd"),
     STOCKNAME("stockName"),
     MARKETCATEGORY("marketCategory"),
@@ -24,7 +26,4 @@ public enum MongoCollection {
     BASEDATE("baseDate");
 
     private final String filedName;
-    MongoCollection(String filedName) {
-        this.filedName = filedName;
-    }
 }

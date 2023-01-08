@@ -23,7 +23,7 @@ public class CallStockInfoOpenApi {
     @Value("${apipath}")
     private String apiPath;
 
-    public ResponseEntity<StockPriceInfo> requestPriceInfo(String stockName, String beginDate) {
+    public ResponseEntity<StockPriceInfo> requestPriceInfo(String stockName, String beginDate) throws Exception{
         RestTemplate restTemplate = new RestTemplate();
         String uri = UriComponentsBuilder.fromUriString(baseURL)
                 .path(apiPath)

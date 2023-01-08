@@ -19,7 +19,7 @@ public class CustomListener implements StepExecutionListener {
     public ExitStatus afterStep(StepExecution stepExecution) {
         log.info("--afterStep");
         String stepName = stepExecution.getStepName();
-        log.info("  stepName :{}", stepName);
+        log.error("  stepName :{}", stepName);
         return stepExecution.getExitStatus();
     }
 }
